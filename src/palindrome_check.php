@@ -28,11 +28,9 @@ function is_palindrome ( $word )
 		{
 			$i++;
 			$j--;
+                        continue;
 		}
-		else
-		{
-			return false;
-		}
+                return false;
 	}
 
 	return true;
