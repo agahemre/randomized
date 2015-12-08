@@ -22,7 +22,7 @@ function is_palindrome ( $word )
          *
 	 */
 
-	while ( $i <= $j )
+	while ( $i < $j )
 	{
 		if ( $word[$i] == $word[$j] )
 		{
@@ -45,13 +45,9 @@ function main ( $argv )
 		exit(1);
 
 	}
-	
-	if ( is_palindrome ( str_split ( $argv[1] ) ) )
-	{
-		echo $argv[1] . " is palindrome.\n";
-	}
-	else
-		echo $argv[1] . " is NOT palindrome.\n";
+        
+        $argv[1] .=  ( is_palindrome ( str_split ( $argv[1] ) ) ) ? " is palindrome.\n" : " is NOT palindrome.\n";
+        echo $argv[1];
 }
 // Usage :: php palindrome_check.php <your-word-be-asked-palindrome>
 return main ( $argv );
