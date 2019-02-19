@@ -12,6 +12,7 @@
 namespace utility
 {
     void randomStr (std::string&, size_t = definition::length);
+    void randomStr (char*, size_t = definition::length);
 }
 
 #endif // UTILITY_H

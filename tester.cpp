@@ -2,45 +2,49 @@
 #include "crypto/sha1.hpp"
 #include "Utility.h"
 #include <omp.h>
+#include <chrono>
+#include <cstring>
 
 int main(int argc, char* argv[]) {
 
     const std::string authdata("abcdefghijklmnoprstxwyz1234567890!@#$%^&*()_+");
-    size_t length = 8;
+    size_t length = 10;
+    char destptr[50];
     std::string suffix;
     suffix.reserve(length);
     SHA1 checksum;
-    const size_t difficulty = 7;
-    unsigned int sayac = 0;
+    const size_t difficulty = 9;
     omp_set_num_threads(omp_get_max_threads());
 
     /* OpenMP does not provide a parallel while loop,
      so we're going to have to make one ourselves... */
     // @reference: https://cvw.cac.cornell.edu/OpenMP/whileloop
     int sstop =0;
+    bool found;
 
-    #pragma omp parallel private(tn, tj, suffix)
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
+    #pragma omp parallel private(found, suffix, destptr)
     {
         while (!sstop) {
-            suffix.clear();
-            utility::randomStr(suffix, length);
+            utility::randomStr(destptr, length);
             std::string(buffer);
-            buffer.append(authdata).append(suffix);
+            buffer.append(authdata).append(destptr);
             checksum.update(buffer);
             const std::string hash = checksum.final();
+            found = hash.substr(0, difficulty).find_first_not_of(definition::zero) == std::string::npos;
 
-            if (hash.substr(0, difficulty).find_first_not_of(definition::zero) == std::string::npos) {
+            if (found) {
                 sstop = 1; // break;
-                printf("suffix: %s ->\t hash: %s\n", suffix.c_str(), hash.c_str());
+                printf("suffix: %s ->\t hash: %s\n", destptr, hash.c_str());
                 #pragma omp flush(sstop)
             }
-
-            sayac++;
         }
     }
 
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::minutes>(t2 - t1).count();
 
-    printf("sayac: %d\n", sayac);
-
+    printf("Process time (in minutes) -> %d\n", duration);
     return 0;
 }
